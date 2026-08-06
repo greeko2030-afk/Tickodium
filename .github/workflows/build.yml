@@ -1,4 +1,4 @@
-name: Build Tickodium Mod (Windows)
+name: Build Tickodium Mod
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
@@ -20,15 +20,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Setup Gradle
+      - name: Setup and Execute Gradle Build
         uses: gradle/actions/setup-gradle@v3
-
-      - name: Build with Gradle
-        run: .\gradlew build
+        with:
+          arguments: build
 
       - name: Upload Mod Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Tickodium-1.21.x-Jar
+          name: Tickodium-Jar
           path: build/libs/*.jar
-
