@@ -3,7 +3,7 @@
   "id": "tickodium",
   "version": "${version}",
   "name": "Tickodium",
-  "description": "Multi-threaded tick optimization mod for Minecraft 1.21.x with Vulkan & OpenGL support. Developed by Greeko Company.",
+  "description": "Multi-threaded tick optimization mod for Minecraft 1.21.x with Vulkan & OpenGL support. Developed by GreekoASC.",
   "authors": [
     "GreekoASC"
   ],
@@ -11,7 +11,7 @@
     "homepage": "https://github.com/Greeko-afk/Tickodium"
   },
   "license": "MIT",
-  "Icon" : "src/main/resources/assets/icon.png",
+  "Icon" : "assets/tickodium/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
