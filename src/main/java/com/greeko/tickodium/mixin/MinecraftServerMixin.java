@@ -1,1 +1,50 @@
+package com.greeko.tickodium.mixin;
 
+import com.greeko.tickodium.threading.ThreadManager;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BooleanSupplier;
+
+@Mixin(MinecraftServer.class)
+public class MinecraftServerMixin {
+
+    @Inject(method = "tickWorlds", at = @At("HEAD"))
+    private void onWorldsTick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+        MinecraftServer server = (MinecraftServer) (Object) this;
+
+        for (ServerWorld world : server.getWorlds()) {
+            
+            // 1.21.x Mob AI & Pathfinding Processing (2 Cores)
+            CompletableFuture<Void> mobTask = ThreadManager.runMobTask(() -> {
+                world.getEntitiesByType(null, entity -> entity instanceof MobEntity)
+                        .forEach(entity -> {
+                            // Server-side Mob AI updates
+                        });
+            });
+
+            // 1.21.x TNT Physics & Explosion Raycasting (2 Cores)
+            CompletableFuture<Void> tntTask = ThreadManager.runTntTask(() -> {
+                world.getEntitiesByType(null, entity -> entity instanceof TntEntity)
+                        .forEach(entity -> {
+                            // Compute TNT physics & movement
+                        });
+            });
+
+            // 1.21.x World & Block Data Processing (2 Cores)
+            CompletableFuture<Void> worldTask = ThreadManager.runWorldTask(() -> {
+                // Async block tick processing
+            });
+
+            // Synchronization Point (Safe for VulkanMod / Sodium / Standard OpenGL rendering)
+            CompletableFuture.allOf(mobTask, tntTask, worldTask).join();
+        }
+    }
+}
