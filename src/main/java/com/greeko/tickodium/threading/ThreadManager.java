@@ -2,31 +2,18 @@ package com.greeko.tickodium.threading;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 public class ThreadManager {
 
-    // 2 Dedicated cores per task category
-    private static final ExecutorService TNT_EXECUTOR = Executors.newFixedThreadPool(2);
-    private static final ExecutorService MOB_EXECUTOR = Executors.newFixedThreadPool(2);
-    private static final ExecutorService WORLD_EXECUTOR = Executors.newFixedThreadPool(2);
+    // Uses the ForkJoinPool which leverages ALL available CPU cores dynamically for any task
+    private static final ExecutorService ALL_CORES_EXECUTOR = ForkJoinPool.commonPool();
 
-    public static CompletableFuture<Void> runTntTask(Runnable runnable) {
-        return CompletableFuture.runAsync(runnable, TNT_EXECUTOR);
-    }
-
-    public static CompletableFuture<Void> runMobTask(Runnable runnable) {
-        return CompletableFuture.runAsync(runnable, MOB_EXECUTOR);
-    }
-
-    public static CompletableFuture<Void> runWorldTask(Runnable runnable) {
-        return CompletableFuture.runAsync(runnable, WORLD_EXECUTOR);
+    public static CompletableFuture<Void> runAsync(Runnable runnable) {
+        return CompletableFuture.runAsync(runnable, ALL_CORES_EXECUTOR);
     }
 
     public static void shutdown() {
-        TNT_EXECUTOR.shutdown();
-        MOB_EXECUTOR.shutdown();
-        WORLD_EXECUTOR.shutdown();
+        // ForkJoinPool.commonPool() manages its own lifecycle natively, so manual shutdown is not strictly required.
     }
 }
-
