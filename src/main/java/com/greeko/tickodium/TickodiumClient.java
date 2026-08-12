@@ -13,12 +13,11 @@ public class TickodiumClient implements ClientModInitializer {
         Tickodium.LOGGER.info("[Greeko Company] Tickodium Client 1.21.x Initialized.");
 
         if (FabricLoader.getInstance().isModLoaded("vulkanmod")) {
-            Tickodium.LOGGER.info("[Greeko Company] VulkanMod 1.21.x detected! Rendering synchronization active.");
+            Tickodium.LOGGER.info("[Greeko Company] VulkanMod detected! Rendering synchronization active.");
         } else if (FabricLoader.getInstance().isModLoaded("sodium")) {
-            Tickodium.LOGGER.info("[Greeko Company] Sodium 1.21.x detected! OpenGL synchronization active.");
+            Tickodium.LOGGER.info("[Greeko Company] Sodium detected! OpenGL synchronization active.");
         } else {
-            Tickodium.LOGGER.info("[Greeko Company] Running on Standard 1.21.x Vanilla OpenGL pipeline.");
+            Tickodium.LOGGER.info("[Greeko Company] Running on Standard Vanilla OpenGL pipeline.");
         }
     }
 }
-
