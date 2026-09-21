@@ -6,14 +6,17 @@ import java.util.concurrent.ForkJoinPool;
 
 public class ThreadManager {
 
-    // Uses the ForkJoinPool which leverages ALL available CPU cores dynamically for any task
     private static final ExecutorService ALL_CORES_EXECUTOR = ForkJoinPool.commonPool();
 
     public static CompletableFuture<Void> runAsync(Runnable runnable) {
         return CompletableFuture.runAsync(runnable, ALL_CORES_EXECUTOR);
     }
 
+    public static ExecutorService getExecutor() {
+        return ALL_CORES_EXECUTOR;
+    }
+
     public static void shutdown() {
-        // ForkJoinPool.commonPool() manages its own lifecycle natively, so manual shutdown is not strictly required.
+        // ForkJoinPool lifecycle is managed natively by JVM
     }
 }
