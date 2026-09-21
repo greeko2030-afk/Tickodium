@@ -12,11 +12,11 @@ public class Tickodium implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("[Greeko Company] Initializing Tickodium for Minecraft 1.21.x...");
-        LOGGER.info("[Greeko Company] Engine Status: Utilizing ALL Available CPU Cores dynamically for TNT, Mobs, and World tasks.");
+        LOGGER.info("[Greeko Company] Initializing Tickodium v1.0.2 for Minecraft 1.21.x...");
+        LOGGER.info("[Greeko Company] Engine Status: Full-System Multithreading Active. World Gen, Packets, Weather, and Autosave routed to ALL cores.");
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            LOGGER.info("[Greeko Company] Server stopping. Shutting down Tickodium Thread Pools safely...");
+            LOGGER.info("[Greeko Company] Server stopping. Flushing and shutting down all thread pools safely...");
             ThreadManager.shutdown();
         });
     }
