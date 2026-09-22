@@ -6,7 +6,9 @@
     "MinecraftServerMixin",
     "ServerWorldMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ShaderRendererMixin"
+    "ShaderRendererMixin" ,
+    "FakeFullscreenMixin" ,
+    "FramebufferUpscaleMixin"
   ],
   "client": [
     "ShaderRendererMixin"
