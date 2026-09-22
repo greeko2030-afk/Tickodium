@@ -6,7 +6,8 @@
     "MinecraftServerMixin",
     "ServerWorldMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ShaderRendererMixin"
+    "ShaderRendererMixin" ,
+    "BorderlessWindowMixin"
   ],
   "client": [
     "ShaderRendererMixin"
