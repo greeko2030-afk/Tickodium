@@ -2,6 +2,7 @@ package com.greeko.tickodium.mixin;
 
 import com.greeko.tickodium.threading.ThreadManager;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter; // New import for Minecraft 1.21
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,21 +13,20 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(GameRenderer.class)
 public class ShaderRendererMixin {
 
+    // Updated method signature for Minecraft 1.21
     @Inject(method = "renderWorld", at = @At("HEAD"))
-    private void onRenderWorld(float tickDelta, long limitTime, CallbackInfo ci) {
+    private void onRenderWorld(RenderTickCounter tickCounter, CallbackInfo ci) {
         
-        // Task: Shader Uniforms & Matrix Calculations utilizing ALL Cores
         CompletableFuture<Void> shaderTask = ThreadManager.runAsync(() -> {
             try {
                 // Multi-threaded CPU-side preparations for Shaders 
                 // Processes Matrix math, lightmap updates, and uniform data distribution
-                // This prevents the main thread from stalling before handing rendering over to the GPU
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
-        // Synchronization Point: Wait for the CPU to finish calculating shader data across all cores before rendering the frame
+        // Synchronization Point
         shaderTask.join();
     }
 }
