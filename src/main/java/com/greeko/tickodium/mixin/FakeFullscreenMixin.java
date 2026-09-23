@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Window.class)
 public abstract class FakeFullscreenMixin {
@@ -24,14 +23,8 @@ public abstract class FakeFullscreenMixin {
     @Unique
     private boolean isFakeFullscreenActive = false;
 
-    // Set lower internal resolution for maximum windowed FPS gain (e.g., 1280x720)
-    @Unique
-    private static final int FAKE_WIDTH = 1280;
-    @Unique
-    private static final int FAKE_HEIGHT = 720;
-
     /**
-     * Intercepts window state updates to implement borderless windowed mode.
+     * Safely applies Borderless Windowed mode without causing OpenGL frame buffer desync.
      */
     @Inject(method = "updateWindowRegion", at = @At("HEAD"), cancellable = true)
     private void onUpdateWindowRegion(CallbackInfo ci) {
@@ -64,26 +57,6 @@ public abstract class FakeFullscreenMixin {
                 this.windowedWidth, this.windowedHeight,
                 GLFW.GLFW_DONT_CARE
             );
-        }
-    }
-
-    /**
-     * Overrides internal rendering width to match target windowed resolution.
-     */
-    @Inject(method = "getFramebufferWidth", at = @At("HEAD"), cancellable = true)
-    private void overrideFramebufferWidth(CallbackInfoReturnable<Integer> cir) {
-        if (this.isFakeFullscreenActive) {
-            cir.setReturnValue(FAKE_WIDTH);
-        }
-    }
-
-    /**
-     * Overrides internal rendering height to match target windowed resolution.
-     */
-    @Inject(method = "getFramebufferHeight", at = @At("HEAD"), cancellable = true)
-    private void overrideFramebufferHeight(CallbackInfoReturnable<Integer> cir) {
-        if (this.isFakeFullscreenActive) {
-            cir.setReturnValue(FAKE_HEIGHT);
         }
     }
 }
