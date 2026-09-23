@@ -1,7 +1,7 @@
 package com.greeko.tickodium.mixin;
 
 import net.minecraft.client.gl.Framebuffer;
-import org11.opengl.GL11;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
