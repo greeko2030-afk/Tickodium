@@ -7,8 +7,7 @@
     "ServerWorldMixin",
     "ServerPlayNetworkHandlerMixin",
     "ShaderRendererMixin" ,
-    "FakeFullscreenMixin" ,
-    "FpsHudMixin"
+    "FakeFullscreenMixin"
   ],
   "client": [
     "ShaderRendererMixin"
