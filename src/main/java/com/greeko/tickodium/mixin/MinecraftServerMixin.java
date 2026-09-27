@@ -12,14 +12,14 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
 
-    // Module 5: Async Database & World Autosave Loop on all cores
     @Inject(method = "saveAll", at = @At("HEAD"))
-    private void onAutosave(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+    private void onAutosaveAsync(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+        MinecraftServer server = (MinecraftServer) (Object) this;
+        
+        // ACTUAL WORKLOAD: Touching player data asynchronously
         CompletableFuture.runAsync(() -> {
-            try {
-                // Offloaded background autosave loop preventing disk-I/O tick lag
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (server.getPlayerManager() != null) {
+                server.getPlayerManager().saveAllPlayerData(); // Real bytecode execution for Autosave
             }
         }, ThreadManager.getExecutor());
     }
