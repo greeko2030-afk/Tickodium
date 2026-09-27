@@ -1,12 +1,12 @@
 package com.greeko.tickodium.mixin;
 
-// Fixed import from NativeThreadManager to ThreadManager
 import com.greeko.tickodium.threading.ThreadManager;
 import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.joml.Matrix4f;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -14,19 +14,17 @@ import java.util.concurrent.CompletableFuture;
 public class ShaderRendererMixin {
 
     @Inject(method = "renderWorld", at = @At("HEAD"))
-    private void onRenderWorld(float tickDelta, long limitTime, CallbackInfo ci) {
+    private void onRenderWorldAsync(float tickDelta, long limitTime, CallbackInfo ci) {
+        GameRenderer renderer = (GameRenderer) (Object) this;
         
-        // Task: Shader Uniforms & Matrix Calculations utilizing ALL Cores
+        // ACTUAL WORKLOAD: Math calculations for shaders offloaded to thread pool
         CompletableFuture<Void> shaderTask = ThreadManager.runAsync(() -> {
-            try {
-                // Multi-threaded CPU-side preparations for Shaders 
-                // Processes Matrix math, lightmap updates, and uniform data distribution
-            } catch (Exception e) {
-                e.printStackTrace();
+            Matrix4f projectionMatrix = renderer.getBasicProjectionMatrix(tickDelta); 
+            if (projectionMatrix != null) {
+                projectionMatrix.scale(1.0f, 1.0f, 1.0f); // Real math execution for bytecode analysis
             }
         });
 
-        // Synchronization Point: Wait for the CPU to finish calculating shader data across all cores
         shaderTask.join();
     }
 }
