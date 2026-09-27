@@ -21,7 +21,8 @@ public class NetworkPacketMixin {
             
             CompletableFuture.runAsync(() -> {
                 // Actual Network Packet Encoding and Dispatching Bytecode
-                connection.sendImmediately(packet, null);
+                // Added 'true' parameter to match the 1.21.x method requirements (Packet, Callbacks, Flush)
+                connection.sendImmediately(packet, null, true);
             }, ThreadManager.getExecutor());
         }
     }
