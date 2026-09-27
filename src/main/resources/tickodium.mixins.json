@@ -3,11 +3,12 @@
   "package": "com.greeko.tickodium.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "MinecraftServerMixin",
-    "ServerWorldMixin",
-    "ServerPlayNetworkHandlerMixin",
+    "TntPhysicsMixin",
+    "MobAiMixin",
+    "WorldEngineMixin",
+    "WorldGenMixin",
     "ShaderRendererMixin" ,
-    "FakeFullscreenMixin"
+    "NetworkPacketMixin"
   ],
   "client": [
     "ShaderRendererMixin"
