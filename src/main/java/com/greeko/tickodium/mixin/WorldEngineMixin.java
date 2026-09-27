@@ -2,32 +2,33 @@ package com.greeko.tickodium.mixin;
 
 import com.greeko.tickodium.threading.ThreadManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.level.ServerWorldProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.concurrent.CompletableFuture;
-
 @Mixin(ServerWorld.class)
 public class WorldEngineMixin {
 
-    @Inject(method = "tickWeather", at = @At("HEAD"), cancellable = true)
-    private void onTickWeatherAsync(CallbackInfo ci) {
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void onWorldTick(java.util.function.BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
         ServerWorld world = (ServerWorld) (Object) this;
-        ci.cancel();
-        
-        CompletableFuture.runAsync(() -> {
-            // Actual Weather Processing Bytecode accessed safely via ServerWorldProperties
-            if (world.getLevelProperties() instanceof ServerWorldProperties properties) {
-                if (world.getGameRules().getBoolean(net.minecraft.world.GameRules.DO_WEATHER_CYCLE)) {
-                    int clearWeatherTime = properties.getClearWeatherTime();
-                    if (clearWeatherTime > 0) {
-                        properties.setClearWeatherTime(clearWeatherTime - 1);
-                    }
-                }
-            }
-        }, ThreadManager.getExecutor());
+
+        // 1. Send heavy operations to the background thread
+        ThreadManager.runAsync(() -> {
+            
+            // Example: Do some heavy calculations here (Pathfinding, custom logic, block scanning)
+            // This happens on a separate thread, so it won't lag the server!
+            double heavyMathResult = Math.pow(2048, 2); 
+
+            // 2. Safely apply the results back on the Main Thread
+            ThreadManager.runOnMainThread(world.getServer(), () -> {
+                
+                // SAFE ZONE: You can modify the world here without getting NullPointerExceptions
+                // Example: Spawn entities, explode TNT, update blocks safely
+                // System.out.println("Applied updates to the world safely! Result: " + heavyMathResult);
+                
+            });
+        });
     }
 }
