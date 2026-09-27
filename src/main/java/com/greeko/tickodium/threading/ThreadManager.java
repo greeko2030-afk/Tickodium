@@ -1,22 +1,32 @@
 package com.greeko.tickodium.threading;
 
-import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.MinecraftServer;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executors;
 
 public class ThreadManager {
+    // Creates a thread pool based on the user's available CPU cores
+    private static final ExecutorService WORKER_POOL = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() / 2));
 
-    private static final ExecutorService ALL_CORES_EXECUTOR = ForkJoinPool.commonPool();
-
-    public static CompletableFuture<Void> runAsync(Runnable runnable) {
-        return CompletableFuture.runAsync(runnable, ALL_CORES_EXECUTOR);
+    /**
+     * Run heavy tasks off the main thread.
+     * WARNING: DO NOT modify blocks, chunks, or entities inside this method!
+     */
+    public static void runAsync(Runnable task) {
+        WORKER_POOL.submit(task);
     }
 
-    public static ExecutorService getExecutor() {
-        return ALL_CORES_EXECUTOR;
-    }
-
-    public static void shutdown() {
-        // ForkJoinPool lifecycle is managed natively by JVM
+    /**
+     * Safely runs world-modifying tasks back on the main Minecraft server thread.
+     * Use this after finishing your async calculations.
+     */
+    public static void runOnMainThread(MinecraftServer server, Runnable task) {
+        if (server.isOnThread()) {
+            // Already on the main thread, execute immediately
+            task.run();
+        } else {
+            // Queue the task to run on the next main thread tick to prevent crashes
+            server.execute(task);
+        }
     }
 }
