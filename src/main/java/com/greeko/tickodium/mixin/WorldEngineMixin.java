@@ -2,6 +2,7 @@ package com.greeko.tickodium.mixin;
 
 import com.greeko.tickodium.threading.ThreadManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.level.ServerWorldProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,25 +19,14 @@ public class WorldEngineMixin {
         ci.cancel();
         
         CompletableFuture.runAsync(() -> {
-            // Actual Weather Processing Bytecode
-            if (world.getGameRules().getBoolean(net.minecraft.world.GameRules.DO_WEATHER_CYCLE)) {
-                int clearWeatherTime = world.getServer().getSaveProperties().getClearWeatherTime();
-                if (clearWeatherTime > 0) {
-                    world.getServer().getSaveProperties().setClearWeatherTime(clearWeatherTime - 1);
+            // Actual Weather Processing Bytecode accessed safely via ServerWorldProperties
+            if (world.getLevelProperties() instanceof ServerWorldProperties properties) {
+                if (world.getGameRules().getBoolean(net.minecraft.world.GameRules.DO_WEATHER_CYCLE)) {
+                    int clearWeatherTime = properties.getClearWeatherTime();
+                    if (clearWeatherTime > 0) {
+                        properties.setClearWeatherTime(clearWeatherTime - 1);
+                    }
                 }
-            }
-        }, ThreadManager.getExecutor());
-    }
-
-    @Inject(method = "tickBlockEntities", at = @At("HEAD"), cancellable = true)
-    private void onTickBlockEntitiesAsync(CallbackInfo ci) {
-        ServerWorld world = (ServerWorld) (Object) this;
-        ci.cancel();
-        
-        CompletableFuture.runAsync(() -> {
-            // Actual Block Entity Ticking Engine Bytecode
-            if (!world.blockEventQueue.isEmpty()) {
-                world.processBlockEvents();
             }
         }, ThreadManager.getExecutor());
     }
