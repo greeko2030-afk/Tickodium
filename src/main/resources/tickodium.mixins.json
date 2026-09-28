@@ -9,7 +9,7 @@
     "WorldGenMixin",
     "ShaderRendererMixin" ,
     "NetworkPacketMixin" ,
-    "TntEntityMixin.java"
+    "TntEntityMixin"
   ],
   "client": [
     "ShaderRendererMixin"
