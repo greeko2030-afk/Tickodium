@@ -8,7 +8,8 @@
     "WorldEngineMixin",
     "WorldGenMixin",
     "ShaderRendererMixin" ,
-    "NetworkPacketMixin"
+    "NetworkPacketMixin" ,
+    "TntEntityMixin.java"
   ],
   "client": [
     "ShaderRendererMixin"
