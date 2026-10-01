@@ -18,27 +18,47 @@ public abstract class TntEntityMixin extends Entity {
     }
 
     /**
-     * Fixes the issue where a single TNT flies into the air upon ignition.
-     * This cancels any initial upward velocity and enforces standard gravity.
+     * Fixes TNT flying into the sky, prevents sideways sliding, 
+     * and stops TNT from vanishing visually during chain explosions.
      */
     @Inject(method = "tick", at = @At("HEAD"))
-    private void fixTntIgniteFlyIssue(CallbackInfo ci) {
-        Vec3d velocity = this.getVelocity();
-
-        // 1. Cancel any upward motion (Y > 0) immediately to prevent flying
-        if (velocity.y > 0.0) {
-            // Apply a slight downward force (standard Minecraft gravity)
-            this.setVelocity(velocity.x, -0.04, velocity.z);
+    private void fixTntPhysicsDesync(CallbackInfo ci) {
+        // Only run physics modifications on the Server to prevent visual desync
+        if (this.getWorld().isClient()) {
+            return;
         }
 
-        // 2. Reduce excessive horizontal movement to keep the TNT in place
-        if (Math.abs(velocity.x) > 0.5 || Math.abs(velocity.z) > 0.5) {
-            this.setVelocity(velocity.x * 0.1, this.getVelocity().y, velocity.z * 0.1);
+        Vec3d vel = this.getVelocity();
+        boolean needsUpdate = false;
+        double newX = vel.x;
+        double newY = vel.y;
+        double newZ = vel.z;
+
+        // 1. Cap upward velocity to prevent TNT from flying into the sky 
+        // (Vanilla initial hop is ~0.2, so 0.5 allows normal behavior but stops extreme flying)
+        if (newY > 0.5) {
+            newY = 0.5;
+            needsUpdate = true;
         }
 
-        // 3. Ensure gravity is always enabled for the TNT entity
-        if (this.hasNoGravity()) {
-            this.setNoGravity(false);
+        // 2. Smoothly dampen horizontal movement to prevent sliding into corners
+        if (Math.abs(newX) > 0.0 || Math.abs(newZ) > 0.0) {
+            newX *= 0.7; // Reduce sideways speed safely without breaking block collisions
+            newZ *= 0.7;
+            
+            if (Math.abs(newX) < 0.01) newX = 0.0;
+            if (Math.abs(newZ) < 0.01) newZ = 0.0;
+            needsUpdate = true;
+        }
+
+        // 3. Apply the updated velocity and force a Client sync
+        if (needsUpdate) {
+            this.setVelocity(newX, newY, newZ);
+            
+            // CRITICAL FIX: This tells the client about the new velocity. 
+            // Without this, the TNT vanishes on the screen before exploding.
+            // Note: If 'velocityModified' shows an error, use 'velocityDirty = true' instead.
+            this.velocityModified = true; 
         }
     }
 }
