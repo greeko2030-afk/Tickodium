@@ -11,7 +11,7 @@
     "homepage": "https://github.com/Greeko-afk/Tickodium"
   },
   "license": "MIT",
-  "Icon" : "assets/tickodium/icon.png",
+  "Icon": "assets/tickodium/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -22,7 +22,8 @@
     ]
   },
   "mixins": [
-    "tickodium.mixins.json"
+    "tickodium.mixins.json",
+    "tickodium.parallel.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.0",
@@ -30,4 +31,3 @@
     "java": ">=21"
   }
 }
-

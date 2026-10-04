@@ -3,13 +3,11 @@
   "package": "com.greeko.tickodium.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "TntPhysicsMixin",
     "MobAiMixin",
     "WorldEngineMixin",
     "WorldGenMixin",
-    "ShaderRendererMixin" ,
-    "NetworkPacketMixin" ,
-    "TntEntityMixin"
+    "ShaderRendererMixin",
+    "NetworkPacketMixin"
   ],
   "client": [
     "ShaderRendererMixin"
