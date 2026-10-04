@@ -1,0 +1,11 @@
+{
+  "required": false,
+  "package": "com.greeko.tickodium.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ExplosionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
